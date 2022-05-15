@@ -136,7 +136,6 @@ int main(int argc, char *argv[])
 
         plbc = CheckBingo(bingo);
         write(sock, &plbc, sizeof(plbc));
-        read(sock, &cpbc, sizeof(cpbc));
 
         if (plbc >= 5)
         {

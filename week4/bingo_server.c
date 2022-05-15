@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
     int serv_sock;
     int clnt_sock;
     int pipe1[2], pipe2[2], pipe3[2], pipe4[2];
+    pid_t pid;
+    struct sigaction sig;
 
     struct sockaddr_in serv_addr;
     struct sockaddr_in clnt_addr;
@@ -27,10 +29,10 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
-    if (pipe(pipe1) < 0 || pipe(pipe2) < 0 || pipe(pipe3) < 0 || pipe(pipe4) < 0)
-        error_handling("pipe() error");
-
-    act.sa_handler = z_handler;
+    act.sa_handler = read_childproc;
+    sigemptyset(&act.sa_mask);
+    act.sa_flags = 0;
+    state = sigaction(SIGCHLD, &act, 0);
 
     serv_sock = socket(PF_INET, SOCK_STREAM, 0);
     if (serv_sock == -1)
