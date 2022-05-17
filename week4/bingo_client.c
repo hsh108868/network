@@ -15,8 +15,8 @@ int main(int argc, char *argv[])
 {
     int sock;
     struct sockaddr_in serv_addr;
-    char arr[25], bingo[5][5];
-    int count, plbc, cpbc = 0;
+    char arr[25], bingo[5][5], wait[100];
+    int count, plbc, cpbc, myOrder = 0;
     int row, column, number;
 
     if (argc != 3)
@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
     }
 
     sock = socket(PF_INET, SOCK_STREAM, 0);
+
+    read(sock, &wait, sizeof(wait));
 
     if (sock == -1)
         error_handling("socket() error");
@@ -37,6 +39,8 @@ int main(int argc, char *argv[])
 
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
         error_handling("connect() error!");
+
+    read(sock, wait, sizeof(wait));
 
     for (int i = 0; i < 25; i++)
     {
