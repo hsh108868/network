@@ -103,10 +103,6 @@ int main(int argc, char *argv[])
 
         write(sock, &number, sizeof(number));
 
-        plbc = CheckBingo(bingo);
-        write(sock, &plbc, sizeof(plbc));
-        read(sock, &cpbc, sizeof(cpbc));
-
         if (plbc >= 5)
         {
             printf("\n승리했습니다. 축하합니다!\n");
