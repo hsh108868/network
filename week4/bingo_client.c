@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <sys/socket.h>
 #define _CRT_SECURE_NO_WARNINGS
+#define BUFF_SIZE 1024
 void error_handling(char *answer);
 void shuffle(char *arr);
 int CheckBingo(char arr[5][5]);
@@ -15,7 +16,7 @@ int main(int argc, char *argv[])
 {
     int sock;
     struct sockaddr_in serv_addr;
-    char arr[25], bingo[5][5], wait[100];
+    char arr[25], bingo[5][5], wait[BUFF_SIZE];
     int count, plbc, cpbc, myOrder = 0;
     int row, column, number;
 
@@ -40,8 +41,6 @@ int main(int argc, char *argv[])
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
         error_handling("connect() error!");
 
-    read(sock, wait, sizeof(wait));
-
     for (int i = 0; i < 25; i++)
     {
         arr[i] = i + 1;
@@ -57,6 +56,11 @@ int main(int argc, char *argv[])
             count++;
         }
     } //빙고 판 초기화
+
+    if (read(sock, wait, BUFF_SIZE - 1))
+    {
+        printf("%s", wait);
+    }
 
     printf("\n빙고를 시작합니다. \n");
 

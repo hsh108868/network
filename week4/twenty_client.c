@@ -36,11 +36,7 @@ int main(int argc, char *argv[])
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) == -1)
         error_handling("connect() error!");
 
-    str_len = read(sock, start, SIZE - 1);
-    start[str_len] = 0;
-    printf("%s", start);
-
-    while (1)
+        while (1)
     {
         printf("\n1~50의 숫자 중 하나를 선택해 주세요.");
         scanf("%d", &select);

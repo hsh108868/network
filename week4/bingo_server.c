@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 {
     int serv_sock;
     int clnt_sock;
-    int pipe1[2], pipe2[2], pipe3[2], pipe4[2], user[2];
+    int pipe1[2], pipe2[2], pipe3[2], pipe4[2];
     int number, state;
     int clnt_cnt = 0; // 접속된 클라이언트 수
     char wait[] = "상대방의 접속을 기다리는 중입니다.";
@@ -67,8 +67,10 @@ int main(int argc, char *argv[])
         else
             puts("new client connected...");
 
-        ++clnt_cnt;
-        answ = rand() % 24 + 1;
+        if (clnt_cnt < 2)
+        {
+            clnt_cnt++;
+        }
 
         pid = fork();
 
@@ -82,11 +84,7 @@ int main(int argc, char *argv[])
         {
             if (clnt_cnt < 2)
             {
-                user[clnt_cnt - 1] = clnt_sock;
-                if (clnt_cnt == 1)
-                {
-                    write(pipe1[1], wait, sizeof(wait));
-                }
+                write(clnt_sock, wait, strlen(wait));
                 continue;
             }
             close(clnt_sock);
