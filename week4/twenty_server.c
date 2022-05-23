@@ -59,7 +59,12 @@ int main(int argc, char *argv[])
     {
         read(clnt_sock, &select, sizeof(select));
 
-        if (answer > select)
+        if (answer == select)
+        {
+            write(clnt_sock, right, strlen(right));
+            break;
+        }
+        else if (answer > select)
         {
             write(clnt_sock, high, strlen(start));
         }
@@ -67,12 +72,7 @@ int main(int argc, char *argv[])
         {
             write(clnt_sock, low, strlen(low));
         }
-        else if (answer = select)
-        {
-            write(clnt_sock, right, strlen(right));
-            break;
         }
-    }
     close(clnt_sock);
     close(serv_sock);
 
