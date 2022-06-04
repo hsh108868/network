@@ -77,7 +77,7 @@ void *handle_clnt(void *arg) // 소켓 번호가 넘어온다.
 	{
 		if (clnt_sock == clnt_socks[i])
 		{
-			while (i++ < clnt_cnt - 1)
+			for (; i < clnt_cnt; i++)
 				clnt_socks[i] = clnt_socks[i + 1];
 			break;
 		}
