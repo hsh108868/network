@@ -59,6 +59,10 @@ void *send_msg(void *arg) // 송신하는 쓰레드가 입력할 함수 arg : �
 			close(sock);
 			exit(0);
 		}
+		if (!strcmp(msg, "@"))
+		{
+			write(sock, "@", strlen("@"));
+		}
 		sprintf(name_msg, "%s %s", name, msg); // name msg == [LEE] 채팅메시지
 		write(sock, name_msg, strlen(name_msg));
 	}

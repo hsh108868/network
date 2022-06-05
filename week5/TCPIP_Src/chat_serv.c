@@ -70,7 +70,13 @@ void *handle_clnt(void *arg) // 소켓 번호가 넘어온다.
 
 	// 반복(클라이언트가 접속 종료 시까지 계속 반복)
 	while ((str_len = read(clnt_sock, msg, sizeof(msg))) != 0)
+	{
+		if (read(clnt_sock, "@", sizeof("@")) != 0)
+		{
+			send_msg(msg, str_len);
+		}
 		send_msg(msg, str_len); // 함수 호출
+	}
 
 	pthread_mutex_lock(&mutx);
 	for (i = 0; i < clnt_cnt; i++) // 클라이언트 연결 종료시 처리 부분
