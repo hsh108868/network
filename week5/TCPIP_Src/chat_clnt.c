@@ -56,6 +56,8 @@ void *send_msg(void *arg) // 송신하는 쓰레드가 입력할 함수 arg : �
 		fgets(msg, BUF_SIZE, stdin);					// 버프사이즈만큼 키보드로 입력받아 msg 배열(전역변수)에 넣는다
 		if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n")) // 메시지 내용이 q라면 클라이언트 접속을 끊음
 		{
+			sprintf(name_msg, "%s %s", name, " 님이 퇴장하셨습니다.");
+			write(sock, name_msg, strlen(name_msg));
 			close(sock);
 			exit(0);
 		}
@@ -63,8 +65,11 @@ void *send_msg(void *arg) // 송신하는 쓰레드가 입력할 함수 arg : �
 		{
 			write(sock, "@", strlen("@"));
 		}
-		sprintf(name_msg, "%s %s", name, msg); // name msg == [LEE] 채팅메시지
-		write(sock, name_msg, strlen(name_msg));
+		else
+		{
+			sprintf(name_msg, "%s %s", name, msg);
+			write(sock, name_msg, strlen(name_msg));
+		} // name msg == [LEE] 채팅메시지
 	}
 	return NULL; // 처음부터 [name] 채팅 형식으로 보내자
 }
