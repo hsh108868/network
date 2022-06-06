@@ -75,7 +75,10 @@ void *handle_clnt(void *arg) // 소켓 번호가 넘어온다.
 		{
 			send_msg(msg, str_len);
 		}
-		send_msg(msg, str_len); // 함수 호출
+		else
+		{
+			send_msg(msg, str_len);
+		} // 함수 호출
 	}
 
 	pthread_mutex_lock(&mutx);
