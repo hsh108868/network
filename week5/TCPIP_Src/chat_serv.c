@@ -9,6 +9,7 @@
 
 #define BUF_SIZE 100
 #define MAX_CLNT 10
+#define NAME_SIZE 20
 
 // 클라이언트는 읽기만 하면 되기 때문에 메인 쓰레드를 건드릴 일이 없지만, 채팅 서버는 건들여야 하므로 잘 만들어야 한다.
 
@@ -18,7 +19,12 @@ void error_handling(char *msg);
 
 int clnt_cnt = 0;
 int clnt_socks[MAX_CLNT]; // 10개 클라이언트 지원
+char *userlist[MAX_CLNT];
+char name[NAME_SIZE] = "[DEFAULT]"; //전역 공유
+char quitUser[NAME_SIZE];
+char clnt_names[MAX_CLNT][NAME_SIZE];
 pthread_mutex_t mutx;
+char msg[BUF_SIZE];
 
 int main(int argc, char *argv[])
 {
@@ -26,6 +32,8 @@ int main(int argc, char *argv[])
 	struct sockaddr_in serv_adr, clnt_adr;
 	int clnt_adr_sz;
 	pthread_t t_id;
+	int str_len = 0;
+
 	if (argc != 2)
 	{
 		printf("Usage : %s <port>\n", argv[0]);
@@ -66,12 +74,39 @@ void *handle_clnt(void *arg) // 소켓 번호가 넘어온다.
 {
 	int clnt_sock = *((int *)arg); // clnt_sock 에 소켓 번호를 넣는다(3카피)
 	int str_len = 0, i;
-	char msg[BUF_SIZE];
+
+	for (int i = 0; i < clnt_cnt; i++)
+	{
+		for (int j = 1; msg[j] != ']'; j++)
+		{
+			clnt_names[i][j - 1] = msg[j];
+		}
+	}
 
 	// 반복(클라이언트가 접속 종료 시까지 계속 반복)
 	while ((str_len = read(clnt_sock, msg, sizeof(msg))) != 0)
 	{
-		send_msg(msg, str_len); // 함수 호출
+
+		if (msg[str_len - 1] == 'q' || msg[str_len - 1] == 'Q')
+		{
+			for (int i = 0; i < str_len - 2; i++)
+			{
+				quitUser[i] = msg[i];
+			}
+			strcat(msg, "\0");
+			sprintf(msg, "%s 님이 접속을 종료했습니다.", quitUser);
+			send_msg(msg, str_len);
+		}
+		else if (msg[str_len - 1] == '@')
+		{
+			for (int k = 0; k < clnt_cnt; k++)
+				strcat(msg, clnt_names[k]);
+			send_msg(msg, str_len);
+		}
+		else
+		{
+			send_msg(msg, str_len); // 함수 호출
+		}
 	}
 
 	pthread_mutex_lock(&mutx);

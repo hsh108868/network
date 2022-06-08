@@ -8,6 +8,7 @@
 
 #define BUF_SIZE 100
 #define NAME_SIZE 20
+#define MAX_CLNT 10
 
 void *send_msg(void *arg);
 void *recv_msg(void *arg);
@@ -15,6 +16,7 @@ void error_handling(char *msg);
 
 char name[NAME_SIZE] = "[DEFAULT]"; //전역 공유
 char msg[BUF_SIZE];					// 두 쓰레드간 같이 쓰기 위해 전역변수로 선언함
+char *userlist[MAX_CLNT];
 
 int main(int argc, char *argv[])
 {
@@ -53,30 +55,24 @@ void *send_msg(void *arg) // 송신하는 쓰레드가 입력할 함수 arg : �
 	char name_msg[NAME_SIZE + BUF_SIZE]; // 최대 100 길이의 채팅 메시지 (20은 이름(NAME_SIZE))
 	while (1)
 	{
+
+		sprintf(name_msg, "%s %s", name, msg);
+		write(sock, name_msg, strlen(name_msg));
+
 		fgets(msg, BUF_SIZE, stdin);					// 버프사이즈만큼 키보드로 입력받아 msg 배열(전역변수)에 넣는다
 		if (!strcmp(msg, "q\n") || !strcmp(msg, "Q\n")) // 메시지 내용이 q라면 클라이언트 접속을 끊음
 		{
-			sprintf(name_msg, "%s %s", name, " 님이 퇴장하셨습니다.");
-			write(sock, name_msg, strlen(name_msg));
 			close(sock);
 			exit(0);
 		}
-		if (!strcmp(msg, "@"))
-		{
-			write(sock, "@", strlen("@"));
-		}
-		else
-		{
-			sprintf(name_msg, "%s %s", name, msg);
-			write(sock, name_msg, strlen(name_msg));
-		} // name msg == [LEE] 채팅메시지
+		// name msg == [LEE] 채팅메시지
 	}
 	return NULL; // 처음부터 [name] 채팅 형식으로 보내자
 }
 
 void *recv_msg(void *arg) // read thread main
 {
-	int sock = *((int *)arg); // 소켓번호값을  형변환 한다
+	int sock = *((int *)arg); // 소켓번호값을 형변환 한다
 	char name_msg[NAME_SIZE + BUF_SIZE];
 	int str_len;
 	while (1)
